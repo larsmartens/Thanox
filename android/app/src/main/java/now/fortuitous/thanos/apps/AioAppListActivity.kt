@@ -128,37 +128,68 @@ class AioAppListActivity : BaseAppListFilterActivity() {
             )
         }
 
-    private val appsManagerRecentUsedConfig
-        get() = BaseAppListFilterContainerConfig(
-            featureId = "appsManagerRecentUsedConfig",
-            appBarConfig = AppBarConfig(
-                title = {
-                    it.getString(R.string.titile_suggested_apps_recent_used)
-                },
-            ),
-            appItemConfig = AppItemConfig(
-                itemType = AppItemConfig.ItemType.Plain(
-                    onAppClick = {
-                        AppDetailsActivity.start(this, it.appInfo)
+    private val appsManagerRecentUsedConfig: BaseAppListFilterContainerConfig
+        get() {
+            val pm = ThanosManager.from(this).pkgManager
+            return BaseAppListFilterContainerConfig(
+                featureId = "appsManagerRecentUsedConfig",
+                appBarConfig = AppBarConfig(
+                    title = {
+                        it.getString(R.string.titile_suggested_apps_recent_used)
                     },
                 ),
-                loader = { context, pkgSetId ->
-                    recentAppsAppLoader(context, pkgSetId) { false }
-                },
-            ),
-            fabs = listOf(
-                FabItemConfig(
-                    title = { it.getString(R.string.title_package_sets) },
-                    onClick = {
-                        PackageSetListActivity.start(this)
-                    }),
-                FabItemConfig(
-                    title = { it.getString(R.string.title_suggested_apps_view_all) },
-                    onClick = {
-                        AioAppListActivity.start(this, PrebuiltFeatureIds.ID_APPS_MANAGER)
-                    })
+                appItemConfig = AppItemConfig(
+                    itemType = AppItemConfig.ItemType.Plain(
+                        onAppClick = {
+                            AppDetailsActivity.start(this, it.appInfo)
+                        },
+                    ),
+                    loader = { context, pkgSetId ->
+                        recentAppsAppLoader(context, pkgSetId) { false }
+                    },
+                ),
+                fabs = listOf(
+                    FabItemConfig(
+                        title = { it.getString(R.string.title_package_sets) },
+                        onClick = {
+                            PackageSetListActivity.start(this)
+                        }),
+                    FabItemConfig(
+                        title = { it.getString(R.string.title_suggested_apps_view_all) },
+                        onClick = {
+                            AioAppListActivity.start(this, PrebuiltFeatureIds.ID_APPS_MANAGER)
+                        })
+                ),
+                batchOperationConfig = BatchOperationConfig(
+                    operations = listOf(
+                        BatchOperationConfig.Operation(
+                            title = { it.getString(R.string.freeze) },
+                            onClick = { models ->
+                                models.forEach {
+                                    pm.setApplicationEnableState(
+                                        Pkg.fromAppInfo(it.appInfo),
+                                        false,
+                                        true
+                                    );
+                                }
+                            }
+                        ),
+                        BatchOperationConfig.Operation(
+                            title = { it.getString(R.string.temp_unfreeze) },
+                            onClick = { models ->
+                                models.forEach {
+                                    pm.setApplicationEnableState(
+                                        Pkg.fromAppInfo(it.appInfo),
+                                        true,
+                                        true
+                                    );
+                                }
+                            }
+                        ),
+                    )
+                )
             )
-        )
+        }
 
     private val bgStartConfig: BaseAppListFilterContainerConfig
         get() {
