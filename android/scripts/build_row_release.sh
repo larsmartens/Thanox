@@ -1,1 +1,6 @@
-./gradlew clean :android_framework:patch-magisk:bridge-dex-app:extractBridgeJar :android_framework:patch-magisk:module:zipRelease app:assembleRowRelease
+./gradlew clean
+
+ ./gradlew :android_framework:patch-magisk:bridge-dex-app:extractBridgeJar
+./gradlew :android_framework:patch-magisk:module:zipRelease
+
+ ./gradlew app:assembleRowRelease

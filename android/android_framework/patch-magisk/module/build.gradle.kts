@@ -1,3 +1,4 @@
+import kotlinx.coroutines.delay
 import org.jetbrains.kotlin.daemon.common.toHexString
 import tornaco.project.android.thanox.Configs
 import tornaco.project.android.thanox.Configs.magiskModuleBuildDir
@@ -129,10 +130,17 @@ afterEvaluate {
                     }
                 }
                 // copy jars
+                val dexOutDir = file("${magiskDir}/system/framework/")
+                val jarSrcFile = file("$outDir/android_framework/patch-magisk/bridge-dex-app/outputs/thanox-bridge.jar")
+                log("Copying Jars from $jarSrcFile, exists? ${jarSrcFile.exists()}")
+                log("Copying Jars to $dexOutDir")
+                while (!jarSrcFile.exists()) {
+                    Thread.sleep(1000)
+                    log("Copying Jars, waiting for src file.")
+                }
                 copy {
-                    val dexOutDir = file("${magiskDir}/system/framework/")
-                    from(file("$outDir/android_framework/patch-magisk/bridge-dex-app/outputs/thanox-bridge.jar"))
-                    into(file("$dexOutDir"))
+                    from(jarSrcFile)
+                    into(dexOutDir)
                 }
 
                 // generate sha1sum
