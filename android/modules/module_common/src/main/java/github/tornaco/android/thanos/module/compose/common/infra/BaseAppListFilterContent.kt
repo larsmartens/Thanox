@@ -96,6 +96,8 @@ fun BaseAppListFilterActivity.BaseAppListFilterContent(config: BaseAppListFilter
     val vm = hiltViewModel<BaseAppListFilterVM>()
     LaunchedEffect(Unit) { vm.installIn(config) }
 
+    val uiState by vm.state.collectAsState()
+
     val context = LocalContext.current
     val title = remember { config.appBarConfig.title(context) }
     val searchBarState = rememberSearchBarState()
@@ -208,18 +210,19 @@ fun BaseAppListFilterActivity.BaseAppListFilterContent(config: BaseAppListFilter
             }
         },
         floatingActionButton = {
-            config.fabs.forEach {
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        it.onClick()
+            if (!uiState.isInSelectionMode) {
+                config.fabs.forEach {
+                    ExtendedFloatingActionButton(
+                        onClick = {
+                            it.onClick()
+                        }
+                    ) {
+                        Text(it.title(context))
                     }
-                ) {
-                    Text(it.title(context))
                 }
             }
         }
     ) { paddings ->
-        val uiState by vm.state.collectAsState()
         val pullRefreshState =
             rememberPullRefreshState(uiState.isLoading, { vm.refresh("pullRefreshState") })
         Box(
