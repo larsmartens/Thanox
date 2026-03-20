@@ -14,3 +14,13 @@
 .idea/
 out/
 .kotlin/
+
+android_framework/base/bin/
+android_framework/dex-maker/bin/
+android_framework/patch-common/bin/
+android_framework/patch-magisk/bridge/bin/
+android_framework/patch-magisk/patch-framework/bin/
+android_framework/patchx-lib/bin/
+annotation_processors/xposed_hook_annotation/bin/
+annotation_processors/xposed_hook_compiler/bin/
+third_party/libxposed/api/bin/
