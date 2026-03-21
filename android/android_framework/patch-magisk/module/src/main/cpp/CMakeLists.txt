@@ -16,5 +16,5 @@ set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${LINKER_FLAGS}")
 
 add_library(${MODULE_NAME} SHARED core/ThanoxBridge.cpp zygisk/thanox.cpp)
 
-target_link_libraries(${MODULE_NAME} log)
+target_link_libraries(${MODULE_NAME} log c++_static)
 set_target_properties(${MODULE_NAME} PROPERTIES LINK_FLAGS_RELEASE -s)

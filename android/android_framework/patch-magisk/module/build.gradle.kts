@@ -30,7 +30,10 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags.add("-std=c++17 -fno-exceptions -fno-rtti -fvisibility=hidden -fvisibility-inlines-hidden")
-                arguments("-DMODULE_NAME:STRING=${tornaco.project.android.thanox.MagiskModConfigs.moduleLibraryName}")
+                arguments(
+                    "-DMODULE_NAME:STRING=${tornaco.project.android.thanox.MagiskModConfigs.moduleLibraryName}",
+                    "-DANDROID_STL=c++_static",
+                )
             }
         }
     }
