@@ -2,5 +2,5 @@
   "version": "8.6-27-cce3f50-fix_M1-thanox-loader",
   "versionCode": 3379361,
   "zipUrl": "https://github.com/larsmartens/Thanox/releases/download/8.6-27-cce3f50-fix_M1-thanox-loader/zygisk-thanox-8.6-27-cce3f50-fix_M1-thanox-loader-release.zip",
-  "changelog": "https://github.com/larsmartens/Thanox/releases/tag/8.6-27-cce3f50-fix_M1-thanox-loader"
+  "changelog": "https://raw.githubusercontent.com/larsmartens/Thanox/master/android/android_framework/patch-magisk/changelog.md"
 }
