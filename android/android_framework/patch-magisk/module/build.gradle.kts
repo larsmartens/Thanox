@@ -104,6 +104,7 @@ afterEvaluate {
                     "versionCode" to moduleVersionCode.toString(),
                     "author" to moduleAuthor,
                     "description" to moduleDescription,
+                    "updateJson" to "https://raw.githubusercontent.com/larsmartens/Thanox/master/android/android_framework/patch-magisk/update.json",
                 )
 
                 var modulePropText = ""

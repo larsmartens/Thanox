@@ -1,0 +1,38 @@
+name: Build Zygisk Module
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - ".github/workflows/zygisk-module.yml"
+      - "android/android_framework/patch-magisk/**"
+      - "android/buildSrc/**"
+      - "android/gradle.properties"
+      - "android/settings.gradle.kts"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+      - uses: android-actions/setup-android@v3
+      - name: Build magisk module
+        working-directory: android
+        run: |
+          chmod +x gradlew scripts/build_magisk_patch.sh
+          ./scripts/build_magisk_patch.sh
+      - name: Upload module zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: thanox-zygisk-module
+          path: android/out/*.zip
