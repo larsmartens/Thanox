@@ -217,6 +217,7 @@ dependencies {
     implementation(project(":modules:module_filepicker"))
     implementation(project(":modules:module_sub"))
     implementation(project(":modules:module_feature_launcher"))
+    implementation(project(":modules:module_bpok"))
 
     implementation(project(":android_framework:base"))
     implementation(project(":android_framework:res"))
