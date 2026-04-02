@@ -1,5 +1,7 @@
 import com.android.build.gradle.api.AndroidBasePlugin
 import com.github.megatronking.stringfog.plugin.StringFogExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import tornaco.project.android.thanox.Configs
 import tornaco.project.android.thanox.Configs.outDir
 import tornaco.project.android.thanox.Configs.thanoxVersionCode
@@ -84,6 +86,10 @@ subprojects {
             )
         )
         options.encoding = "UTF-8"
+    }
+
+    tasks.withType<KotlinJvmCompile>().configureEach {
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
     }
 
     plugins.withType(com.android.build.gradle.api.AndroidBasePlugin::class.java) {
