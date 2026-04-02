@@ -10,6 +10,7 @@ import tornaco.project.android.thanox.MagiskModConfigs.moduleName
 import tornaco.project.android.thanox.MagiskModConfigs.moduleVersion
 import tornaco.project.android.thanox.MagiskModConfigs.moduleVersionCode
 import tornaco.project.android.thanox.log
+import org.gradle.api.GradleException
 import java.nio.file.Files
 import java.security.MessageDigest
 
@@ -74,6 +75,9 @@ fun calcSha256(file: File): String {
 }
 
 afterEvaluate {
+    val bridgeDexProject = project(":android_framework:patch-magisk:bridge-dex-app")
+    val bridgeJarFile = bridgeDexProject.layout.buildDirectory.file("outputs/thanox-bridge.jar")
+
     android.libraryVariants.forEach { variant ->
         val variantCapped = variant.name.capitalize()
         val variantLowered = variant.name.toLowerCase()
@@ -82,6 +86,7 @@ afterEvaluate {
         task("prepareMagiskFiles${variantCapped}") {
             group = "magisk"
             dependsOn("assemble$variantCapped")
+            dependsOn(":android_framework:patch-magisk:bridge-dex-app:extractBridgeJar")
 
             doFirst {
                 delete { delete(magiskDir) }
@@ -135,12 +140,14 @@ afterEvaluate {
                 }
                 // copy jars
                 val dexOutDir = file("${magiskDir}/system/framework/")
-                val jarSrcFile = file("$outDir/android_framework/patch-magisk/bridge-dex-app/outputs/thanox-bridge.jar")
+                val jarSrcFile = bridgeJarFile.get().asFile
                 log("Copying Jars from $jarSrcFile, exists? ${jarSrcFile.exists()}")
                 log("Copying Jars to $dexOutDir")
-                while (!jarSrcFile.exists()) {
-                    Thread.sleep(1000)
-                    log("Copying Jars, waiting for src file.")
+                if (!jarSrcFile.exists()) {
+                    throw GradleException(
+                        "Expected bridge jar at $jarSrcFile, but it was not generated. " +
+                            "Check :android_framework:patch-magisk:bridge-dex-app:extractBridgeJar output."
+                    )
                 }
                 copy {
                     from(jarSrcFile)
