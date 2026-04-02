@@ -1,3 +1,10 @@
+# 8.6-40-a37911b
+
+- Fix the Magisk module packaging path so CI no longer hangs waiting for `thanox-bridge.jar`.
+- Align the workflow and Gradle JVM targets to Java 21 so the module build completes on GitHub Actions.
+
+---
+
 # 8.6-27-cce3f50-fix_M1-thanox-loader
 
 _Commit titles and messages for `v8.6..8.6-27-cce3f50-fix_M1-thanox-loader`._
