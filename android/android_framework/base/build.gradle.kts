@@ -107,7 +107,7 @@ buildConfig {
     buildConfigField("String", "THANOX_TG_CHANNEL", provider { "\"https://t.me/thanox_mod\"" })
     buildConfigField("String", "THANOX_QQ_PRIMARY", provider { "\"482221916\"" })
     buildConfigField("String", "THANOX_SERVER_BASE_URL", provider { "\"http://thanox.emui.tech/api/\"" })
-    buildConfigField("String", "THANOX_SERVER_GITHUB_BASE_URL", provider { "\"https://raw.githubusercontent.com/Tornaco/Thanox/master/\"" })
+    buildConfigField("String", "THANOX_SERVER_GITHUB_BASE_URL", provider { "\"https://raw.githubusercontent.com/larsmartens/Thanox/master/\"" })
 
     buildConfigField("String", "THANOX_APP_PRC_SIGN_SEC", provider { "\"A92E8A9A743FE6648E2E4743FDAC89E9EB4A568F\"" })
     buildConfigField("String", "THANOX_APP_ROW_PLAY_SIGN_SEC", provider { "\"58BCDEF326ABAF65A98AF7B881FA9C059752002E\"" })
