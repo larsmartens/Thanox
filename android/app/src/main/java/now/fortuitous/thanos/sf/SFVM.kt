@@ -97,7 +97,6 @@ class SFVM @Inject constructor(
         const val KEY_QUERY = "query"
         const val KEY_SELECTED_PKG_SET_ID = "set"
     }
-
     private val logger = Logger("SFVM")
 
     private val _state = MutableStateFlow(
@@ -234,6 +233,18 @@ class SFVM @Inject constructor(
             context.withThanos {
                 state.value.selectedApps.forEach {
                     pkgManager.setApplicationEnableState(it, true, false)
+                }
+                finishEdit()
+                delayRefresh()
+            }
+        }
+    }
+
+    fun freezeSelectedApps() {
+        viewModelScope.launch {
+            context.withThanos {
+                state.value.selectedApps.forEach {
+                    pkgManager.setApplicationEnableState(it, false, false)
                 }
                 finishEdit()
                 delayRefresh()
