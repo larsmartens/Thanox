@@ -546,6 +546,13 @@ private fun BottomToolbar(
                     }
                 }
                 TinySpacer()
+
+                Button(onClick = {
+                    sfVM.freezeSelectedApps()
+                }) {
+                    Text(text = stringResource(id = github.tornaco.android.thanos.res.R.string.freeze))
+                }
+                TinySpacer()
                 Button(onClick = {
                     sfVM.tempUnFreezeSelectedApps()
                 }) {
