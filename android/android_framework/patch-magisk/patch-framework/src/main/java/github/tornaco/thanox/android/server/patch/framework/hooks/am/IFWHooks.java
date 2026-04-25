@@ -114,10 +114,19 @@ class IFWHooks {
             }
 
             private Boolean handleCheckBroadcast(Object[] args) {
+                if (args == null || args.length < 5) {
+                    return null;
+                }
                 int callerUid = (int) args[1];
                 int recUid = (int) args[4];
                 Intent intent = (Intent) args[0];
                 if (intent == null) return null;
+                if (intent.getComponent() == null && intent.getPackage() == null) {
+                    // Implicit broadcasts do not identify a receiver package here on current
+                    // Android builds. Forwarding them floods system_server logs and does not give
+                    // Thanox enough target identity to make a useful package-level decision.
+                    return null;
+                }
                 boolean res =
                         BootStrap.THANOS_X
                                 .getActivityManagerService()
