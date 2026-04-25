@@ -60,16 +60,28 @@ policy path.
 
 The patched module built successfully through GitHub Actions.
 
-Device-side installation and post-reboot validation are pending because the phone
-stopped enumerating via both adb and fastboot before the module could be staged.
-The prepared install/verify helper is local-only:
+Device-side installation was completed after the phone re-enumerated via adb.
+Magisk's direct `magisk --install-module` command refused the wrapper context, so
+the module was staged manually using Magisk's `modules_update` flow with a backup
+and rollback script:
 
-- `/home/larsm/tmp/install_patched_thanox_when_device_returns.sh`
+- backup/rollback root: `/data/local/tmp/thanox-manual-stage-20260425-163634`
+- rollback script: `/data/local/tmp/thanox-manual-stage-20260425-163634/rollback.sh`
 
-Expected post-install checks:
+Post-install validation evidence:
 
-- boot completes with `sys.system_server.start_count=1`
+- local bundle:
+  `/home/larsm/android-evidence-20260425-thanox-final/thanox-final-verify-20260425-164241`
+- boot completed with `sys.boot_completed=1` and `init.svc.bootanim=stopped`
+- `sys.system_server.start_count=1`
 - no new `system_server_anr`, `system_server_watchdog`, or
-  `system_server_pre_watchdog` dropbox entries after an idle window
-- `Thanox-Core: checkBroadcast, receiverPkgName: null...` log volume is reduced
-- patched module hashes match the CI artifact contents
+  `system_server_pre_watchdog` dropbox entries after the patched-module reboot
+- `modules_update/zygisk_thanox` was consumed after reboot
+- patched `arm64-v8a.so` hash:
+  `5baa7419c1206797392de7298d27a721136d15797e2c96efb7135907322db3e9`
+- patched `thanox-bridge.jar` hash:
+  `d023de9d4d79050704a26b8886dfa7f28c4418924983a604b419925a9cb7d427`
+- patched `module.prop` hash:
+  `11a9dc369f359419bb4c7dbca647e338a41cd6c51411594d7e524e30fa80b165`
+- captured boot log had zero occurrences of
+  `Thanox-Core: checkBroadcast, receiverPkgName: null`
