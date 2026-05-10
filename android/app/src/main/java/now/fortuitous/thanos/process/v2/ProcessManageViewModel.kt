@@ -31,10 +31,13 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import github.tornaco.android.thanos.BuildProp
 import github.tornaco.android.thanos.common.AppLabelSearchFilter
 import github.tornaco.android.thanos.core.T
+import github.tornaco.android.thanos.core.app.RunningAppProcessInfoCompat
 import github.tornaco.android.thanos.core.net.TrafficStatsState
 import github.tornaco.android.thanos.core.pm.AppInfo
 import github.tornaco.android.thanos.core.pm.PREBUILT_PACKAGE_SET_ID_3RD
 import github.tornaco.android.thanos.core.pm.Pkg
+import github.tornaco.android.thanos.core.process.ProcessRecord
+import github.tornaco.android.thanos.res.R as ResR
 import github.tornaco.android.thanos.module.compose.common.infra.LifeCycleAwareViewModel
 import github.tornaco.android.thanos.module.compose.common.loader.AppSetFilterItem
 import github.tornaco.android.thanos.module.compose.common.loader.Loader
@@ -59,6 +62,12 @@ import javax.inject.Inject
 @HiltViewModel
 class ProcessManageViewModel @Inject constructor(@ApplicationContext private val context: Context) :
     LifeCycleAwareViewModel() {
+    companion object {
+        private const val FILTER_ID_LINUX = "THANOX_FILTER_LINUX"
+        private const val LINUX_PKG_PREFIX = "linux:"
+        private const val USER_ID_RANGE = 100000
+    }
+
     private val _state =
         MutableStateFlow(
             ProcessManageState(
@@ -117,24 +126,34 @@ class ProcessManageViewModel @Inject constructor(@ApplicationContext private val
                 updateLoadingState(true)
 
                 val stopwatch = Stopwatch()
+                val selectedFilterId = state.value.selectedAppSetFilterItem?.id
+                val includeLinuxProcesses = selectedFilterId == FILTER_ID_LINUX
 
-                val filterPackages: Set<Pkg> = state.value.selectedAppSetFilterItem?.let {
-                    pkgManager.getPackageSetById(
-                        it.id,
-                        true,
-                        true
-                    ).pkgList.filterNot { pkg -> pkg.pkgName == BuildProp.THANOS_APP_PKG_NAME }
-                }?.toSet() ?: emptySet()
+                val filterPackages: Set<Pkg> = if (includeLinuxProcesses) {
+                    emptySet()
+                } else {
+                    state.value.selectedAppSetFilterItem?.let {
+                        pkgManager.getPackageSetById(
+                            it.id,
+                            true,
+                            true
+                        ).pkgList.filterNot { pkg -> pkg.pkgName == BuildProp.THANOS_APP_PKG_NAME }
+                    }?.toSet() ?: emptySet()
+                }
                 stopwatch.step("Load filterPackages")
 
                 val runningServices = activityManager.getRunningServiceLegacy(Int.MAX_VALUE)
                 stopwatch.step("Load runningServices")
-                val runningAppProcess =
+                val runningAppProcess = if (includeLinuxProcesses) {
+                    activityManager.runningLinuxProcess
+                        .map { processRecord -> processRecord.toLinuxProcessCompat() }
+                } else {
                     activityManager.runningAppProcessLegacy
                         .filter { it.pkgList != null && it.pkgList.isNotEmpty() }
+                }
                 stopwatch.step("Load runningAppProcess")
                 val runningPackages =
-                    runningAppProcess.map { Pkg.from(it.pkgList[0], it.uid) }
+                    runningAppProcess.filterNot { it.isLinuxProcess() }.map { Pkg.from(it.pkgList[0], it.uid) }
                         .filter {
                             filterPackages.contains(it)
                         }
@@ -142,9 +161,10 @@ class ProcessManageViewModel @Inject constructor(@ApplicationContext private val
                 stopwatch.step("Map runningPackages")
 
                 val runningAppStates =
-                    runningAppProcess.groupBy { Pkg.from(it.pkgList[0], it.uid) }.map { entry ->
+                    runningAppProcess.groupBy { processPkg(it) }.mapNotNull { entry ->
                         val appStopwatch = Stopwatch("Stopwatch-${entry.key.pkgName}")
                         val pkg: Pkg = entry.key
+                        val isLinuxProcess = entry.value.firstOrNull()?.isLinuxProcess() == true
                         val runningProcessStates = entry.value.map { process ->
                             val processPss =
                                 activityManager.getProcessPss(intArrayOf(process.pid)).sum()
@@ -211,7 +231,11 @@ class ProcessManageViewModel @Inject constructor(@ApplicationContext private val
                         }
                         appStopwatch.step("Load runningTimeMillis.")
 
-                        val appInfo = pkgManager.getAppInfo(pkg)
+                        val appInfo = if (isLinuxProcess) {
+                            createLinuxProcessAppInfo(entry.value.first())
+                        } else {
+                            pkgManager.getAppInfo(pkg)
+                        }
                         appStopwatch.step("Load appInfo.")
                         appStopwatch.log()
                         appInfo?.let { app ->
@@ -222,12 +246,12 @@ class ProcessManageViewModel @Inject constructor(@ApplicationContext private val
                                 totalPss = totalPss,
                                 sizeStr = Formatter.formatShortFileSize(context, totalPss * 1024),
                                 runningTimeMillis = runningTimeMillis,
-                                isPlayingBack = audio.hasAudioFocus(pkg)
+                                isPlayingBack = if (isLinuxProcess) false else audio.hasAudioFocus(pkg)
                             )
                         }
 
-                    }.filterNotNull().filter {
-                        filterPackages.contains(Pkg.fromAppInfo(it.appInfo))
+                    }.filter {
+                        includeLinuxProcesses || filterPackages.contains(Pkg.fromAppInfo(it.appInfo))
                     }.sortedByDescending { it.totalPss }
                 stopwatch.step("Group runningAppProcess")
 
@@ -235,12 +259,15 @@ class ProcessManageViewModel @Inject constructor(@ApplicationContext private val
                     runningAppStates.groupBy { it.allProcessIsCached }
                 XLog.d("startLoading: %s", runningAppStatesGroupByCached)
 
-                val notRunningApps =
+                val notRunningApps = if (includeLinuxProcesses) {
+                    emptyList()
+                } else {
                     filterPackages.filterNot { runningPackages.contains(it) }.mapNotNull {
                         pkgManager.getAppInfo(it)
                     }.sortedWith { o1, o2 ->
                         Collator.getInstance(Locale.CHINESE).compare(o1.appLabel, o2.appLabel)
                     }
+                }
                 stopwatch.step("Filter notRunningApps")
                 stopwatch.log()
 
@@ -257,6 +284,42 @@ class ProcessManageViewModel @Inject constructor(@ApplicationContext private val
                     }
                 )
             }
+        }
+    }
+
+    private fun processPkg(process: RunningAppProcessInfoCompat): Pkg {
+        return if (process.isLinuxProcess()) {
+            Pkg.newPkg("$LINUX_PKG_PREFIX${process.processName}", userIdOf(process.uid))
+        } else {
+            Pkg.from(process.pkgList[0], process.uid)
+        }
+    }
+
+    private fun RunningAppProcessInfoCompat.isLinuxProcess(): Boolean {
+        return pkgList == null || pkgList.isEmpty()
+    }
+
+    private fun createLinuxProcessAppInfo(process: RunningAppProcessInfoCompat): AppInfo {
+        return AppInfo.dummy().apply {
+            pkgName = "$LINUX_PKG_PREFIX${process.processName}"
+            appLabel = process.processName
+            uid = process.uid
+            userId = userIdOf(process.uid)
+            isDummy = true
+        }
+    }
+
+    private fun userIdOf(uid: Int): Int {
+        return if (uid < 0) 0 else uid / USER_ID_RANGE
+    }
+
+    private fun ProcessRecord.toLinuxProcessCompat(): RunningAppProcessInfoCompat {
+        return RunningAppProcessInfoCompat().apply {
+            processName = this@toLinuxProcessCompat.processName
+            pid = this@toLinuxProcessCompat.pid.toInt()
+            uid = this@toLinuxProcessCompat.uid
+            pkgList = emptyArray()
+            importance = ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
         }
     }
 
@@ -287,7 +350,9 @@ class ProcessManageViewModel @Inject constructor(@ApplicationContext private val
 
 
     private suspend fun loadDefaultAppFilterItems() {
-        val appFilterListItems = Loader.loadAllFromAppSet(context)
+        val appFilterListItems = Loader.loadAllFromAppSet(context) + AppSetFilterItem(FILTER_ID_LINUX) {
+            it.getString(ResR.string.running_process_linux)
+        }
         _state.value = _state.value.copy(
             // Default select 3-rd
             selectedAppSetFilterItem = appFilterListItems.find {

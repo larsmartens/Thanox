@@ -30,6 +30,7 @@ interface IActivityManager {
     void onStartProcessLocked(in ApplicationInfo appInfo);
 
     ProcessRecord[] getRunningAppProcess();
+    ProcessRecord[] getRunningLinuxProcess();
     List<Pkg> getRunningAppPackages();
 
     List<RunningServiceInfo> getRunningServiceLegacy(int max);

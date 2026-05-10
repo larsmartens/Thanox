@@ -84,6 +84,9 @@ class RunningAppDetailViewModel @Inject constructor(@ApplicationContext private 
     }
 
     fun forceStop(runningAppState: RunningAppState) {
+        if (runningAppState.appInfo.isDummy) {
+            return
+        }
         context.withThanos {
             activityManager.forceStopPackage(
                 Pkg.fromAppInfo(runningAppState.appInfo),

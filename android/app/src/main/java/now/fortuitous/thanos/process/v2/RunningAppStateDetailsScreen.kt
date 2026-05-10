@@ -126,16 +126,18 @@ private fun RunningAppStateDetailsScreen(
             )
         },
         actions = {
-            IconButton(onClick = {
-                now.fortuitous.thanos.apps.AppDetailsActivity.start(
-                    context,
-                    runningAppState.appInfo
-                )
-            }) {
-                Icon(
-                    painter = painterResource(id = github.tornaco.android.thanos.module.common.R.drawable.module_common_ic_md_outline_settings_24),
-                    contentDescription = "Settings"
-                )
+            if (!runningAppState.appInfo.isDummy) {
+                IconButton(onClick = {
+                    now.fortuitous.thanos.apps.AppDetailsActivity.start(
+                        context,
+                        runningAppState.appInfo
+                    )
+                }) {
+                    Icon(
+                        painter = painterResource(id = github.tornaco.android.thanos.module.common.R.drawable.module_common_ic_md_outline_settings_24),
+                        contentDescription = "Settings"
+                    )
+                }
             }
         },
         onBackPressed = {
@@ -177,15 +179,17 @@ private fun RunningAppStateDetailsScreen(
                 }
             }
 
-            FilledTonalButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                onClick = {
-                    viewModel.forceStop(runningAppState)
-                    closeScreen(true)
-                }) {
-                Text(text = "${stringResource(id = github.tornaco.android.thanos.res.R.string.service_stop)} ${runningAppState.appInfo.appLabel}")
+            if (!runningAppState.appInfo.isDummy) {
+                FilledTonalButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    onClick = {
+                        viewModel.forceStop(runningAppState)
+                        closeScreen(true)
+                    }) {
+                    Text(text = "${stringResource(id = github.tornaco.android.thanos.res.R.string.service_stop)} ${runningAppState.appInfo.appLabel}")
+                }
             }
         }
     }
@@ -250,7 +254,15 @@ private fun ServiceTile(
     ) {
         Spacer(modifier = Modifier.size(12.dp))
         Row(verticalAlignment = CenterVertically) {
-            AppIcon(modifier = Modifier.size(36.dp), appInfo = runningAppState.appInfo)
+            if (runningAppState.appInfo.isDummy) {
+                Icon(
+                    modifier = Modifier.size(36.dp),
+                    painter = painterResource(id = android.R.drawable.sym_def_app_icon),
+                    contentDescription = runningAppState.appInfo.appLabel
+                )
+            } else {
+                AppIcon(modifier = Modifier.size(36.dp), appInfo = runningAppState.appInfo)
+            }
             Spacer(modifier = Modifier.size(8.dp))
             Column(verticalArrangement = Arrangement.Center) {
                 AppLabelText(appLabel = service.serviceLabel)

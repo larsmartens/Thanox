@@ -917,6 +917,7 @@
     <string name="running_process_running">运行中</string>
     <string name="running_process_background">缓存中</string>
     <string name="running_process_all">全部</string>
+    <string name="running_process_linux">Linux</string>
     <string name="service_stop">停止</string>
     <string name="service_report">报告</string>
     <string name="service_running_time">已运行</string>
