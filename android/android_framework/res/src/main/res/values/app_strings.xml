@@ -1464,6 +1464,7 @@ Are you sure you want to uninstall <b>%s</b>? All data of this clone app instanc
     <string name="running_process_running">Running</string>
     <string name="running_process_background">Cached</string>
     <string name="running_process_all">All</string>
+    <string name="running_process_linux">Linux</string>
     <string name="service_stop">Stop</string>
     <string name="service_report">Report</string>
     <string name="service_running_time">Elapsed</string>

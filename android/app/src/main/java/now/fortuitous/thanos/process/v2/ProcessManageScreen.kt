@@ -445,7 +445,15 @@ fun RunningAppItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                AppIcon(modifier = Modifier.size(38.dp), appState.appInfo)
+                if (appState.appInfo.isDummy) {
+                    Icon(
+                        modifier = Modifier.size(38.dp),
+                        painter = painterResource(id = android.R.drawable.sym_def_app_icon),
+                        contentDescription = appState.appInfo.appLabel
+                    )
+                } else {
+                    AppIcon(modifier = Modifier.size(38.dp), appState.appInfo)
+                }
                 Spacer(modifier = Modifier.size(12.dp))
                 Column(verticalArrangement = Arrangement.Center) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -453,6 +461,10 @@ fun RunningAppItem(
                             Modifier.sizeIn(maxWidth = 240.dp),
                             appState.appInfo.appLabel
                         )
+                        if (appState.appInfo.isDummy) {
+                            TinySpacer()
+                            MD3Badge(stringResource(id = github.tornaco.android.thanos.res.R.string.running_process_linux))
+                        }
                         if (appState.isPlayingBack) {
                             TinySpacer()
                             Icon(
