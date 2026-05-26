@@ -402,8 +402,8 @@ private fun uiSettings(
     val dynamicColor by pref.uiThemeDynamicColor.collectAsStateWithLifecycle(true)
     val darkConfig by pref.uiThemeDarkModeConfig.collectAsStateWithLifecycle(ThemeSettings.DarkThemeConfig.FOLLOW_SYSTEM)
     val darkModeDialog = rememberMenuDialogState<Unit>(
-        title = { "Dark mode" }, menuItems = ThemeSettings.DarkThemeConfig.entries.map {
-            MenuDialogItem(id = it.name, title = it.name)
+        title = { stringResource(R.string.settings_ui_dark_mode_title) }, menuItems = ThemeSettings.DarkThemeConfig.entries.map {
+            MenuDialogItem(id = it.name, title = darkThemeConfigLabel(it))
         }
     ) { _, id ->
         val config = ThemeSettings.DarkThemeConfig.valueOf(id)
@@ -435,7 +435,7 @@ private fun uiSettings(
 
         Preference.SwitchPreference(
             icon = github.tornaco.android.thanos.icon.remix.R.drawable.ic_remix_palette_fill,
-            title = "Dynamic color schema",
+            title = stringResource(R.string.settings_ui_dynamic_color_scheme),
             value = dynamicColor,
             onCheckChanged = { enable ->
                 scope.launch { pref.setUiThemeDynamicColor(enable) }
@@ -443,13 +443,22 @@ private fun uiSettings(
         ),
         Preference.TextPreference(
             icon = github.tornaco.android.thanos.icon.remix.R.drawable.ic_remix_moon_fill,
-            title = "Dark mode",
-            summary = darkConfig.name,
+            title = stringResource(R.string.settings_ui_dark_mode_title),
+            summary = darkThemeConfigLabel(darkConfig),
             onClick = {
                 darkModeDialog.show()
             }
         ),
     )
+}
+
+@Composable
+private fun darkThemeConfigLabel(config: ThemeSettings.DarkThemeConfig): String {
+    return when (config) {
+        ThemeSettings.DarkThemeConfig.FOLLOW_SYSTEM -> stringResource(R.string.settings_ui_dark_mode_follow_system)
+        ThemeSettings.DarkThemeConfig.LIGHT -> stringResource(R.string.settings_ui_dark_mode_light)
+        ThemeSettings.DarkThemeConfig.DARK -> stringResource(R.string.settings_ui_dark_mode_dark)
+    }
 }
 
 

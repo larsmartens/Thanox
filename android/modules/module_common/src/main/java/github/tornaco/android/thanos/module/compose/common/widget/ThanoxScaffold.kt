@@ -54,7 +54,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +65,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import github.tornaco.android.thanos.module.compose.common.theme.TypographyDefaults
 
@@ -194,7 +195,7 @@ private fun SearchBar(searchBarState: SearchBarState) {
             SearchTextField(searchBarState, focusRequester)
         }
 
-        SideEffect {
+        LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
     }
@@ -206,7 +207,7 @@ private fun SearchTextField(searchBarState: SearchBarState, focusRequester: Focu
         modifier = Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester),
-        value = searchBarState.keyword,
+        value = searchBarState.textFieldValue,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
@@ -226,7 +227,7 @@ private fun SearchTextField(searchBarState: SearchBarState, focusRequester: Focu
             }
         },
         onValueChange = {
-            searchBarState.inputKeyword(it)
+            searchBarState.updateTextFieldValue(it)
         })
 }
 
@@ -241,11 +242,20 @@ class SearchBarState {
     private var _showSearchBar by mutableStateOf(false)
     val showSearchBar get() = _showSearchBar
 
+    private var _textFieldValue by mutableStateOf(TextFieldValue(""))
     private var _keyword by mutableStateOf("")
+    val textFieldValue get() = _textFieldValue
     val keyword get() = _keyword
 
+    fun updateTextFieldValue(value: TextFieldValue) {
+        _textFieldValue = value
+        if (_keyword != value.text) {
+            _keyword = value.text
+        }
+    }
+
     fun inputKeyword(value: String) {
-        _keyword = value
+        updateTextFieldValue(TextFieldValue(text = value))
     }
 
     fun closeSearchBar() {

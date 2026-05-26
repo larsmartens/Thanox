@@ -1149,6 +1149,11 @@
     <string name="pre_category_ui">外观</string>
     <string name="pre_title_ui">主题与图标</string>
     <string name="pre_title_app_theme">主题</string>
+    <string name="settings_ui_dynamic_color_scheme">动态配色</string>
+    <string name="settings_ui_dark_mode_title">深色模式</string>
+    <string name="settings_ui_dark_mode_follow_system">跟随系统</string>
+    <string name="settings_ui_dark_mode_light">浅色</string>
+    <string name="settings_ui_dark_mode_dark">深色</string>
     <string name="pre_title_app_icon_pack">图标包</string>
     <string name="pre_title_app_icon_crop_to_circle">圆形图标</string>
     <string name="pre_category_strategy">策略</string>
