@@ -34,6 +34,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.libxposed.api)
     implementation(project(":android_framework:patch-magisk:bridge"))
 }
 

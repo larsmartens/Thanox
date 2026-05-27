@@ -80,7 +80,7 @@ dependencies {
 
     implementation(libs.storage)
 
-    compileOnly(files(project.rootProject.file("android_sdk/xposed-api-82.jar")))
+    compileOnly(libs.libxposed.api)
 
     implementation(project(":android_framework:base"))
     implementation(project(":android_framework:res"))

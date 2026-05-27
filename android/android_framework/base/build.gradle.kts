@@ -3,6 +3,8 @@ import tornaco.project.android.thanox.addAidlTask
 import tornaco.project.android.thanox.aidlBuildDir
 import java.util.Date
 
+apply(from = rootProject.file("gradle/libxposed-api-jar.gradle.kts"))
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.gmazzo.buildconfig)
@@ -33,7 +35,6 @@ dependencies {
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(libs.kotlin.reflect)
 
-    compileOnly(files(project.rootProject.file("android_sdk/xposed-api-82.jar")))
 }
 
 

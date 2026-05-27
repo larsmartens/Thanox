@@ -21,6 +21,22 @@ public interface IPackageLoaded {
     void onPackageLoaded(Param param) throws Throwable;
 
     class Param {
+        public String packageName;
+        public String processName;
+        public ClassLoader classLoader;
+
+        public Param() {
+        }
+
+        public Param(String packageName, ClassLoader classLoader) {
+            this(packageName, packageName, classLoader);
+        }
+
+        public Param(String packageName, String processName, ClassLoader classLoader) {
+            this.packageName = packageName;
+            this.processName = processName;
+            this.classLoader = classLoader;
+        }
 
     }
 }

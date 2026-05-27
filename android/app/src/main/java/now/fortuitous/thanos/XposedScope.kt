@@ -39,13 +39,13 @@ object XposedScope {
             if (hasEnabledFeatureDepOnScope(context, pkg)) {
                 if (!it.scope.contains(pkg.pkgName)) {
                     XLog.i("XposedScope requestScope: $pkg")
-                    it.requestScope(pkg.pkgName, object : XposedService.OnScopeEventListener {})
+                    it.requestScope(listOf(pkg.pkgName), object : XposedService.OnScopeEventListener {})
                 } else {
                     XLog.i("XposedScope already scoped: $pkg")
                 }
             } else {
                 XLog.i("XposedScope removeScope: $pkg")
-                it.removeScope(pkg.pkgName)
+                it.removeScope(listOf(pkg.pkgName))
             }
         }
     }

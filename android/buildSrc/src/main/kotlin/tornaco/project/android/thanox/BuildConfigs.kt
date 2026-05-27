@@ -3,14 +3,15 @@ package tornaco.project.android.thanox
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
+import java.security.MessageDigest
 import java.util.*
 
 private val props = Properties()
 
 object Configs {
-    const val compileSdkVersion = 35
-    const val minSdkVersion = 24
-    const val targetSdkVersion = 35
+    const val compileSdkVersion = 36
+    const val minSdkVersion = 26
+    const val targetSdkVersion = 36
 
     // We use this value to find some build tools binaries.
     // consider to find the latest version more gracefully
@@ -32,8 +33,19 @@ object Configs {
     var thanoxBuildIsRow: Boolean? = false
 
     val thanoxAppIdPrefix: String get() = "github.tornaco.android.thanos"
-    val thanoxBuildFP: String get() = "thanox@tornaco:${UUID.randomUUID().toString()}"
+    val thanoxBuildFP: String
+        get() {
+            val raw = listOf(
+                thanoxVersionName.orEmpty(),
+                thanoxVersionCode?.toString().orEmpty(),
+                thanoxBuildFlavor.orEmpty(),
+                thanoxBuildVariant.orEmpty(),
+                gitHead.orEmpty()
+            ).joinToString(separator = "|")
+            return "thanox@tornaco:${raw.sha256().take(16)}"
+        }
     val thanoxShortcutAppIdPrefix: String get() = "github.tornaco.android.thanos.shortcut"
+    var gitHead: String? = null
 
     val Project.resPrefix: String get() = "${this.name}_"
 
@@ -114,6 +126,7 @@ class ThanoxProjectBuildPlugin : Plugin<Project> {
         Configs.thanoxBuildFlavor = getBuildFlavor().name.lowercase()
         Configs.thanoxBuildVariant = getBuildVariant().name.lowercase()
         Configs.thanoxBuildIsDebug = Configs.thanoxBuildVariant == "debug"
+        Configs.gitHead = gitHead()
         val isRow = Configs.thanoxBuildFlavor == "row"
         Configs.thanoxBuildIsRow = isRow
         Configs.thanoxAppId =
@@ -123,7 +136,33 @@ class ThanoxProjectBuildPlugin : Plugin<Project> {
         log("thanoxBuildFlavor: ${Configs.thanoxBuildFlavor}")
         log("thanoxBuildVariant: ${Configs.thanoxBuildVariant}")
         log("thanoxBuildIsDebug: ${Configs.thanoxBuildIsDebug}")
+        log("thanoxBuildFP: ${Configs.thanoxBuildFP}")
         log("thanoxAppId: ${Configs.thanoxAppId}")
+    }
+
+    private fun Project.gitHead(): String {
+        val headFile = rootProject.file(".git/HEAD")
+        if (!headFile.exists()) {
+            return "nogit"
+        }
+        val head = headFile.readText().trim()
+        if (!head.startsWith("ref:")) {
+            return head
+        }
+        val ref = head.removePrefix("ref:").trim()
+        val refFile = rootProject.file(".git/$ref")
+        if (refFile.exists()) {
+            return refFile.readText().trim()
+        }
+        val packedRefs = rootProject.file(".git/packed-refs")
+        if (packedRefs.exists()) {
+            packedRefs.useLines { lines ->
+                lines.firstOrNull { it.endsWith(" $ref") }?.let { line ->
+                    return line.substringBefore(' ')
+                }
+            }
+        }
+        return ref
     }
 
     private fun Project.getBuildFlavor(): Flavors {
@@ -151,4 +190,10 @@ class ThanoxProjectBuildPlugin : Plugin<Project> {
             Variant.RELEASE
         }
     }
+}
+
+private fun String.sha256(): String {
+    return MessageDigest.getInstance("SHA-256")
+        .digest(toByteArray())
+        .joinToString(separator = "") { "%02x".format(it) }
 }

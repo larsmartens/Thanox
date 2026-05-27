@@ -1111,6 +1111,7 @@ Are you sure you want to uninstall <b>%s</b>? All data of this clone app instanc
 </string>
 
     <string name="menu_title_copy">Copy</string>
+    <string name="menu_title_send_email">Send email</string>
 
     <string name="menu_title_copy_pkg_name">Copy package name</string>
     <string name="menu_title_launch_app">Launch</string>

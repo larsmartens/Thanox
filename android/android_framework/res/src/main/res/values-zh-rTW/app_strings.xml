@@ -1115,6 +1115,7 @@
     <string name="feature_message_infinite_z2_uninstall">你确定要卸载<b>%s</b>吗？该克隆应用的数据将会被删除且无法恢复</string>
 
     <string name="menu_title_copy">複製</string>
+    <string name="menu_title_send_email">發送郵件</string>
 
     <string name="menu_title_copy_pkg_name">複製包名</string>
     <string name="menu_title_launch_app">啟動應用</string>

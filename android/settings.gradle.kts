@@ -46,11 +46,6 @@ include(":third_party:remix")
 include(":third_party:compose-color-picker")
 include(":third_party:reorderable")
 
-// TODO Change to mvn local deps
-include(":third_party:libxposed:interface")
-include(":third_party:libxposed:service")
-include(":third_party:libxposed:api")
-
 include(":android_framework:base")
 include(":android_framework:res")
 include(":android_framework:patchx-lib")

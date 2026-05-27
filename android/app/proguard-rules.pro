@@ -311,7 +311,8 @@
 -dontwarn io.github.libxposed.api.XposedModule
 -dontwarn io.github.libxposed.api.XposedModuleInterface$ModuleLoadedParam
 -dontwarn io.github.libxposed.api.XposedModuleInterface$PackageLoadedParam
--dontwarn io.github.libxposed.api.XposedModuleInterface$SystemServerLoadedParam
+-dontwarn io.github.libxposed.api.XposedModuleInterface$PackageReadyParam
+-dontwarn io.github.libxposed.api.XposedModuleInterface$SystemServerStartingParam
 -dontwarn java.beans.BeanInfo
 -dontwarn java.beans.FeatureDescriptor
 -dontwarn java.beans.IntrospectionException

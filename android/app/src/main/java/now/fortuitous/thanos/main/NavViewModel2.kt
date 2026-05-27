@@ -120,6 +120,9 @@ class NavViewModel2 @Inject constructor(@ApplicationContext private val context:
 
     fun loadCoreStatus() {
         val handled = context.withThanos {
+            XLog.w("loadCoreStatus")
+            XLog.w(BuildProp.THANOS_BUILD_FINGERPRINT)
+            XLog.w(fingerPrint())
             val status = if (BuildProp.THANOS_BUILD_FINGERPRINT != fingerPrint()) {
                 ActiveStatus.RebootNeeded
             } else {

@@ -196,7 +196,7 @@ dependencies {
 
     implementation(libs.listenablefuture)
 
-    compileOnly(files(project.rootProject.file("android_sdk/xposed-api-82.jar")))
+    compileOnly(libs.libxposed.api)
 
     implementation(libs.hiddenapibypass)
 
@@ -238,7 +238,7 @@ dependencies {
     implementation(project(":third_party:remix"))
     implementation(project(":third_party:reorderable"))
     implementation(project(":third_party:compose-color-picker"))
-    implementation(project("::third_party:libxposed:service"))
+    implementation(libs.libxposed.service)
 }
 
 val generateProguardRules by tasks.registering {

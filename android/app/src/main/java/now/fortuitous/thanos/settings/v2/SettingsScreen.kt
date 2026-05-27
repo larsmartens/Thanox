@@ -401,8 +401,9 @@ private fun uiSettings(
     val pref = Pref(context)
     val dynamicColor by pref.uiThemeDynamicColor.collectAsStateWithLifecycle(true)
     val darkConfig by pref.uiThemeDarkModeConfig.collectAsStateWithLifecycle(ThemeSettings.DarkThemeConfig.FOLLOW_SYSTEM)
+    val darkModeTitle = stringResource(R.string.settings_ui_dark_mode_title)
     val darkModeDialog = rememberMenuDialogState<Unit>(
-        title = { stringResource(R.string.settings_ui_dark_mode_title) }, menuItems = ThemeSettings.DarkThemeConfig.entries.map {
+        title = { darkModeTitle }, menuItems = ThemeSettings.DarkThemeConfig.entries.map {
             MenuDialogItem(id = it.name, title = darkThemeConfigLabel(it))
         }
     ) { _, id ->
@@ -443,7 +444,7 @@ private fun uiSettings(
         ),
         Preference.TextPreference(
             icon = github.tornaco.android.thanos.icon.remix.R.drawable.ic_remix_moon_fill,
-            title = stringResource(R.string.settings_ui_dark_mode_title),
+            title = darkModeTitle,
             summary = darkThemeConfigLabel(darkConfig),
             onClick = {
                 darkModeDialog.show()
@@ -534,6 +535,50 @@ private fun aboutSettings(
     val activity = LocalActivity.current
     val context = LocalContext.current
     var clickTimes by remember { mutableIntStateOf(0) }
+    val emailTitle = "Email"
+    val copyTitle = stringResource(R.string.menu_title_copy)
+    val sendEmailTitle = stringResource(R.string.menu_title_send_email)
+    val copyEmail = {
+        ClipboardUtils.copyToClipboard(
+            context,
+            emailTitle,
+            BuildProp.THANOX_CONTACT_EMAIL
+        )
+        Toast.makeText(
+            context,
+            R.string.common_toast_copied_to_clipboard,
+            Toast.LENGTH_LONG
+        ).show()
+    }
+    val sendEmail = {
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            data = "mailto:".toUri()
+            putExtra(
+                Intent.EXTRA_EMAIL,
+                arrayOf(BuildProp.THANOX_CONTACT_EMAIL)
+            )
+            putExtra(Intent.EXTRA_SUBJECT, "Thanox")
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "${BuildProp.THANOS_VERSION_NAME} ${Build.VERSION.SDK_INT} ${Build.DEVICE} ${Build.MODEL}"
+            )
+        }
+        context.startActivity(intent)
+    }
+    val emailActionDialog = rememberMenuDialogState<Unit>(
+        title = { emailTitle },
+        message = BuildProp.THANOX_CONTACT_EMAIL,
+        menuItems = listOf(
+            MenuDialogItem(id = "copy", title = copyTitle),
+            MenuDialogItem(id = "send", title = sendEmailTitle),
+        )
+    ) { _, id ->
+        when (id) {
+            "copy" -> copyEmail()
+            "send" -> sendEmail()
+        }
+    }
+    MenuDialog(emailActionDialog)
     return with(ThanosManager.from(context)) {
         listOf(
             Preference.Category(stringResource(R.string.pre_category_about)),
@@ -586,21 +631,9 @@ private fun aboutSettings(
 
                     Preference.TextPreference(
                         icon = github.tornaco.android.thanos.icon.remix.R.drawable.ic_remix_mail_fill,
-                        title = "Email",
+                        title = emailTitle,
                         onClick = {
-                            val intent = Intent(Intent.ACTION_SENDTO).apply {
-                                data = "mailto:".toUri()
-                                putExtra(
-                                    Intent.EXTRA_EMAIL,
-                                    arrayOf(BuildProp.THANOX_CONTACT_EMAIL)
-                                )
-                                putExtra(Intent.EXTRA_SUBJECT, "Thanox")
-                                putExtra(
-                                    Intent.EXTRA_TEXT,
-                                    "${BuildProp.THANOS_VERSION_NAME} ${Build.VERSION.SDK_INT} ${Build.DEVICE} ${Build.MODEL}"
-                                )
-                            }
-                            context.startActivity(intent)
+                            emailActionDialog.show()
                         },
                     ),
 
