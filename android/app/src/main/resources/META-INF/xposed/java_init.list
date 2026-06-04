@@ -1,1 +1,2 @@
-github.tornaco.android.thanos.services.xposed.LSPosedHookEntry
+github.tornaco.android.thanos.services.xposed.Api100LSPosedHookEntry
+github.tornaco.android.thanos.services.xposed.Api101LSPosedHookEntry

@@ -224,7 +224,9 @@ dependencies {
     implementation(project(":android_framework:patch-magisk:patch-framework"))
     implementation(project(":android_framework:services"))
     implementation(project(":android_framework:db"))
-    implementation(project(":android_framework:patchx-entry"))
+    implementation(project(":android_framework:patchx-entry-legacy"))
+    implementation(project(":android_framework:patchx-entry-100"))
+    implementation(project(":android_framework:patchx-entry-101"))
     implementation(project(":android_framework:utils"))
 
     implementation(project(":shizuku:ui"))
