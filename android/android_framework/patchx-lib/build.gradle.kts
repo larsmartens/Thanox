@@ -10,4 +10,6 @@ dependencies {
 
     implementation(project(":android_framework:base"))
 
+    testImplementation(libs.junit)
+
 }

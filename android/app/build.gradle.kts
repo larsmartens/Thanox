@@ -1,4 +1,3 @@
-import Build_gradle.GoogleFiles
 import tornaco.project.android.thanox.Configs
 import tornaco.project.android.thanox.Configs.keyStoreAlias
 import tornaco.project.android.thanox.Configs.keyStorePassword
@@ -197,6 +196,8 @@ dependencies {
     implementation(libs.listenablefuture)
 
     compileOnly(libs.libxposed.api)
+    compileOnly(files("${rootProject.rootDir.path}/android_sdk/xposed-api-82.jar"))
+    compileOnly(files("${rootProject.rootDir.path}/internal/Thanox-Internal/android_framework/patchx-entry-100/libs/libxposed100api.jar"))
 
     implementation(libs.hiddenapibypass)
 

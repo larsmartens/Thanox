@@ -359,7 +359,7 @@
             android:value="I am thanos!" />
         <meta-data
             android:name="xposedminversion"
-            android:value="101" />
+            android:value="53" />
         <meta-data
             android:name="xposedscope"
             android:resource="@array/scope" />

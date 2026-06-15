@@ -31,8 +31,6 @@ import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import de.robv.android.xposed.XposedBridge;
-
 /**
  * Log {@link Printer} using file system. When print a log, it will print it to the specified file.
  * <p>
@@ -487,8 +485,7 @@ public class FilePrinter implements Printer {
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
             } catch (IOException e) {
-                // Redirect to xposed.
-                XposedBridge.log(flattenedLog);
+
             }
         }
     }

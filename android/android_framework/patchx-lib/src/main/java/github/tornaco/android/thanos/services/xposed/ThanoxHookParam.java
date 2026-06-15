@@ -29,11 +29,17 @@ public class ThanoxHookParam {
     public void setResult(Object result) {
         this.result = result;
         this.resultChanged = true;
+        if (isBefore) {
+            this.skipOriginal = true;
+        }
     }
 
     public void setThrowable(Throwable throwable) {
         this.throwable = throwable;
         this.throwableChanged = true;
+        if (isBefore) {
+            this.skipOriginal = true;
+        }
     }
 
     public boolean isResultChanged() {
