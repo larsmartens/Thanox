@@ -81,6 +81,10 @@
             android:exported="false" />
 
         <activity
+            android:name="now.fortuitous.thanos.task.CleanTaskRemovalSettingsActivity"
+            android:exported="false" />
+
+        <activity
             android:name="now.fortuitous.thanos.apps.AppDetailsActivity"
             android:enabled="true"
             android:exported="true" />
@@ -165,6 +169,9 @@
             android:exported="false" />
         <activity
             android:name="now.fortuitous.thanos.settings.FeatureToggleActivity"
+            android:exported="false" />
+        <activity
+            android:name="now.fortuitous.thanos.main.NavEditActivity"
             android:exported="false" />
 
         <activity
