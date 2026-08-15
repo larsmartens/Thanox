@@ -1,6 +1,6 @@
 {
-  "version": "8.6-99-11ecddb",
-  "versionCode": 3398727,
-  "zipUrl": "https://github.com/larsmartens/Thanox/releases/download/8.6-99-11ecddb/zygisk-thanox-8.6-99-11ecddb-release.zip",
+  "version": "8.6-105-c17390d",
+  "versionCode": 3400154,
+  "zipUrl": "https://github.com/larsmartens/Thanox/releases/download/8.6-105-c17390d/zygisk-thanox-8.6-105-c17390d-release.zip",
   "changelog": "https://raw.githubusercontent.com/larsmartens/Thanox/master/android/android_framework/patch-magisk/changelog.md"
 }
